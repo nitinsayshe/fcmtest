@@ -16,24 +16,44 @@ const messaging = firebase.messaging();
 const statusEl = document.getElementById("status");
 
 async function getFcmToken() {
-    try {
-        console.log("firebase")
-        await Notification.requestPermission();
-        const token = await messaging.getToken({
-            vapidKey: "BB6xdKlu6EH3QpMu_-W5FWCYkNOSIZeuuit9F83DRTQxoebXUVcR0OwfK7K0VoJZHZf7n376sL9r7anEeOtf418"
-        });
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    document.getElementById("status").innerText = "Permission denied";
+    return;
+  }
 
-        if (token) {
-            console.log("FCM Token:", token);
-            statusEl.innerText = "FCM Token:\n" + token;
-        } else {
-            console.warn("No registration token available.");
-            statusEl.innerText = "No registration token available.";
-        }
-    } catch (err) {
-        console.error("Error getting FCM token:", err);
-        statusEl.innerText = "Error: " + err.message;
-    }
+  const token = await messaging.getToken({
+    vapidKey: "BB6xdKlu6EH3QpMu_-W5FWCYkNOSIZeuuit9F83DRTQxoebXUVcR0OwfK7K0VoJZHZf7n376sL9r7anEeOtf418"
+  });
+
+  if (token) {
+    console.log("FCM Token:", token);
+    document.getElementById("status").innerText = "FCM Token:\n" + token;
+  } else {
+    document.getElementById("status").innerText = "Failed to get token.";
+  }
 }
+
+
+// async function getFcmToken() {
+//     try {
+//         console.log("firebase")
+//         await Notification.requestPermission();
+//         const token = await messaging.getToken({
+//             vapidKey: "BB6xdKlu6EH3QpMu_-W5FWCYkNOSIZeuuit9F83DRTQxoebXUVcR0OwfK7K0VoJZHZf7n376sL9r7anEeOtf418"
+//         });
+
+//         if (token) {
+//             console.log("FCM Token:", token);
+//             statusEl.innerText = "FCM Token:\n" + token;
+//         } else {
+//             console.warn("No registration token available.");
+//             statusEl.innerText = "No registration token available.";
+//         }
+//     } catch (err) {
+//         console.error("Error getting FCM token:", err);
+//         statusEl.innerText = "Error: " + err.message;
+//     }
+// }
 
 getFcmToken();
